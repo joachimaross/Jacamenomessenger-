@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { FaBell, FaTimes } from 'react-icons/fa'
+import axios from 'axios'
 
 interface Notification {
   id: string
@@ -19,74 +20,81 @@ export default function NotificationManager() {
   const [permission, setPermission] = useState<NotificationPermission>('default')
 
   useEffect(() => {
-    // Check notification permission
-    if ('Notification' in window) {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
       setPermission(Notification.permission)
+
+      navigator.serviceWorker.ready.then(registration => {
+        if (permission === 'granted') {
+          subscribeUserToPush(registration)
+        }
+      })
     }
 
-    // Mock notifications for demo
-    const mockNotifications: Notification[] = [
-      {
-        id: '1',
-        title: 'New Message',
-        body: 'You have a new message from @elonmusk',
-        platform: 'twitter',
-        timestamp: new Date(Date.now() - 300000),
-        read: false,
-        type: 'message'
-      },
-      {
-        id: '2',
-        title: 'SMS Received',
-        body: 'New SMS from +1234567890',
-        platform: 'sms',
-        timestamp: new Date(Date.now() - 600000),
-        read: false,
-        type: 'message'
-      },
-      {
-        id: '3',
-        title: 'Email Alert',
-        body: 'New email from support@jacameno.com',
-        platform: 'email',
-        timestamp: new Date(Date.now() - 900000),
-        read: true,
-        type: 'message'
-      }
-    ]
+    fetchNotifications()
+  }, [permission])
 
-    setNotifications(mockNotifications)
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get('/api/notifications')
+      setNotifications(response.data)
+    } catch (error) {
+      console.error('Error fetching notifications:', error)
+    }
+  }
 
-    // Show unread notifications as toasts
-    mockNotifications.filter(n => !n.read).forEach(notification => {
-      toast.success(`${notification.title}: ${notification.body}`, {
-        duration: 5000,
-        icon: '📱',
+  const subscribeUserToPush = async (registration: ServiceWorkerRegistration) => {
+    const subscription = await registration.pushManager.getSubscription()
+    if (subscription) {
+      return // User is already subscribed
+    }
+
+    try {
+      const newSubscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
       })
-    })
-  }, [])
+
+      await axios.post('/api/subscribe', newSubscription)
+      toast.success('Successfully subscribed to notifications!')
+    } catch (error) {
+      console.error('Failed to subscribe to push notifications:', error)
+      toast.error('Failed to subscribe to notifications.')
+    }
+  }
 
   const requestPermission = async () => {
-    if ('Notification' in window) {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
       const result = await Notification.requestPermission()
       setPermission(result)
 
       if (result === 'granted') {
-        toast.success('Notifications enabled!')
+        navigator.serviceWorker.ready.then(registration => {
+          subscribeUserToPush(registration)
+        })
       } else {
-        toast.error('Notifications denied')
+        toast.error('Notifications denied.')
       }
     }
   }
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    )
+  const markAsRead = async (id: string) => {
+    try {
+      await axios.put(`/api/notifications/${id}`, { read: true })
+      setNotifications(prev =>
+        prev.map(n => (n.id === id ? { ...n, read: true } : n))
+      )
+    } catch (error) {
+      console.error('Error marking notification as read:', error)
+    }
   }
 
-  const dismissNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
+  const dismissNotification = async (id: string) => {
+    try {
+      await axios.delete(`/api/notifications/${id}`)
+      setNotifications(prev => prev.filter(n => n.id !== id))
+    } catch (error) {
+      console.error('Error dismissing notification:', error)
+    }
   }
 
   const unreadCount = notifications.filter(n => !n.read).length
@@ -152,7 +160,7 @@ export default function NotificationManager() {
                         {notification.body}
                       </p>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                        {notification.timestamp.toLocaleTimeString()}
+                        {new Date(notification.timestamp).toLocaleTimeString()}
                       </p>
                     </div>
 
