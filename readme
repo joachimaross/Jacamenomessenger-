@@ -1,7 +1,23 @@
-# 📩 Jacameno Messaging App
+# 📩 Jacameno Messenger
 
-A modern, real-time messaging application built with **Next.js**, **TypeScript**, and **Tailwind CSS**.  
-Designed for speed, scalability, and a clean user experience — whether for personal use, team collaboration, or as a foundation for future chat-based projects.
+A revolutionary unified messaging platform built with **Next.js**, **TypeScript**, and **Tailwind CSS**. Jacameno Messenger seamlessly integrates SMS, email, and social media communications into a single, intelligent interface designed for speed, scalability, and an exceptional user experience.
+
+## 🚀 Powered by Zeeky AI
+
+**Zeeky AI** is our hyper-personalized social concierge that blends the best of iMessage's intimacy, TikTok's immersion, and Instagram's curation. Powered by advanced AI, Zeeky learns from your interactions to deliver a fluid, context-aware feed combining content from friends, creators, and AI-generated insights.
+
+## 👨‍💻 Creator & Founder
+
+**Joa'Chima Ross Jr.** - Designer, Creator, and Founder of Jacameno Messenger and Zeeky AI. Based in Chicago, IL, Joa'Chima is passionate about building innovative communication solutions that bridge the gap between traditional messaging and modern social media experiences.
+
+## 🌟 Key Features
+
+- **Unified Messaging**: All your SMS, email, and social media in one place
+- **Zeeky AI Integration**: Personalized insights and intelligent recommendations
+- **Cross-Platform Synchronization**: Real-time updates across all connected services
+- **Advanced Media Sharing**: Support for images, videos, documents, and live streams
+- **Smart Notifications**: Context-aware alerts that respect your focus
+- **Privacy-First Design**: Your data stays secure and under your control
 
 ---
 

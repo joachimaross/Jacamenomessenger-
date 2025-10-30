@@ -5,15 +5,15 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Jacameno Messaging',
-  description: 'Unified messaging platform for all your social media and communication needs',
+  title: 'Jacameno Messenger - Powered by Zeeky AI',
+  description: 'Unified messaging platform with Zeeky AI - a hyper-personalized social concierge blending iMessage, TikTok, and Instagram experiences. Created by Joa\'Chima Ross Jr.',
   manifest: '/manifest.json',
-  themeColor: '#3b82f6',
+  themeColor: '#6366f1',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Jacameno Messaging',
+    title: 'AURA',
   },
   icons: {
     icon: '/icon-192x192.png',
