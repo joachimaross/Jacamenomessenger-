@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 import { FaImage, FaVideo, FaLink, FaPoll, FaCalendar, FaGlobe, FaLock, FaUsers } from 'react-icons/fa'
 
 interface PostingInterfaceProps {
@@ -131,9 +132,11 @@ export default function PostingInterface({ onPost, availablePlatforms }: Posting
             {mediaFiles.map((file, index) => (
               <div key={index} className="relative">
                 {file.type.startsWith('image/') && (
-                  <img
+                  <Image
                     src={URL.createObjectURL(file)}
                     alt={file.name}
+                    width={80}
+                    height={80}
                     className="w-20 h-20 object-cover rounded-lg"
                   />
                 )}

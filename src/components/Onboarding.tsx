@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 import { FaCamera, FaPlay, FaPause, FaArrowRight, FaArrowLeft, FaCheck } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -74,7 +75,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              What's your name?
+              What&apos;s your name?
             </label>
             <input
               type="text"
@@ -99,9 +100,11 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               </button>
 
               {profile.avatar && (
-                <img
+                <Image
                   src={profile.avatar}
                   alt="Profile"
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full border-2 border-gray-300"
                 />
               )}

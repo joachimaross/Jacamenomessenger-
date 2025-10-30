@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { FaCamera, FaVideo, FaMagic, FaRedo, FaCheck, FaTimes, FaBolt, FaPalette, FaMusic } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -169,9 +170,10 @@ export default function Camera({ isOpen, onClose, onCapture }: CameraProps) {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <img
+                <Image
                   src={capturedMedia}
                   alt="Captured"
+                  fill
                   className="h-full w-full object-cover"
                 />
               )}

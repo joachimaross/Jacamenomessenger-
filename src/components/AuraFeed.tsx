@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { FaHeart, FaComment, FaShare, FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -182,9 +183,10 @@ export default function AuraFeed() {
           )}
 
           {currentPost.type === 'image' && currentPost.media && (
-            <img
+            <Image
               src={currentPost.media.url}
               alt={currentPost.content}
+              fill
               className="h-full w-full object-cover"
             />
           )}
@@ -208,9 +210,11 @@ export default function AuraFeed() {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black bg-opacity-50">
             {/* Author Info */}
             <div className="absolute top-8 left-4 right-20 flex items-center space-x-3">
-              <img
+              <Image
                 src={currentPost.author.avatar}
                 alt={currentPost.author.name}
+                width={48}
+                height={48}
                 className="w-12 h-12 rounded-full border-2 border-white"
               />
               <div className="text-white">

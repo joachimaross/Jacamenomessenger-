@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { FaImage, FaVideo, FaFile, FaDownload, FaShare, FaTimes } from 'react-icons/fa'
 
 interface MediaItem {
@@ -86,9 +87,11 @@ export default function MediaGallery({ mediaItems, onDownload, onShare, onClose 
                 className="relative group cursor-pointer bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
               >
                 {item.type === 'image' && (
-                  <img
+                  <Image
                     src={item.thumbnail || item.url}
                     alt={item.filename}
+                    width={128}
+                    height={128}
                     className="w-full h-32 object-cover"
                   />
                 )}
@@ -142,9 +145,11 @@ export default function MediaGallery({ mediaItems, onDownload, onShare, onClose 
           <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[60] p-4">
             <div className="relative max-w-4xl max-h-full">
               {selectedItem.type === 'image' && (
-                <img
+                <Image
                   src={selectedItem.url}
                   alt={selectedItem.filename}
+                  width={800}
+                  height={600}
                   className="max-w-full max-h-full object-contain"
                 />
               )}

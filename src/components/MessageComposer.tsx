@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 import {
   FaPaperclip, FaImage, FaVideo, FaMicrophone,
   FaSmile, FaPaperPlane, FaTimes, FaMapMarkerAlt
@@ -87,9 +88,11 @@ export default function MessageComposer({ onSendMessage, selectedPlatform, onClo
               {attachments.map((file, index) => (
                 <div key={index} className="relative">
                   {file.type.startsWith('image/') ? (
-                    <img
+                    <Image
                       src={URL.createObjectURL(file)}
                       alt={file.name}
+                      width={64}
+                      height={64}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                   ) : (

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 import { FaHeart, FaComment, FaShare, FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaBookmark, FaEllipsisH } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 
@@ -96,9 +97,11 @@ export default function PostCard({
       {/* Header */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-3" onClick={() => onProfileClick(post.author.name)}>
-          <img
+          <Image
             src={post.author.avatar}
             alt={post.author.name}
+            width={40}
+            height={40}
             className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-600 cursor-pointer hover:border-blue-500 transition-colors"
           />
           <div className="flex-1">
@@ -196,9 +199,11 @@ export default function PostCard({
               )}
             </div>
           ) : (
-            <img
+            <Image
               src={post.media.url}
               alt={post.content}
+              width={600}
+              height={400}
               className="w-full max-h-96 object-cover"
             />
           )}

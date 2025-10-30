@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { FaSearch, FaPlus, FaPaperPlane, FaMicrophone, FaImage, FaVideo, FaSmile, FaPhone, FaVideo as FaVideoCall } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import ZeekyAI from './ZeekyAI'
@@ -171,9 +172,11 @@ export default function MessagesInbox() {
             >
               <div className="flex items-center space-x-3">
                 <div className="relative">
-                  <img
+                  <Image
                     src={conversation.participants[0].avatar}
                     alt={conversation.participants[0].name}
+                    width={48}
+                    height={48}
                     className="w-12 h-12 rounded-full"
                   />
                   {conversation.participants[0].isOnline && (
@@ -217,9 +220,11 @@ export default function MessagesInbox() {
             {/* Chat Header */}
             <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <img
-                  src={conversations.find(c => c.id === selectedConversation)?.participants[0].avatar}
+                <Image
+                  src={conversations.find(c => c.id === selectedConversation)?.participants[0].avatar || '/api/placeholder/100/100'}
                   alt="Chat participant"
+                  width={40}
+                  height={40}
                   className="w-10 h-10 rounded-full"
                 />
                 <div>
