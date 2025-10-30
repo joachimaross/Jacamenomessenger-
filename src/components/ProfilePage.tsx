@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FaEdit, FaCog, FaMapMarkerAlt, FaCalendarAlt, FaLink, FaHeart, FaComment, FaShare, FaBookmark, FaGrid, FaList, FaTag } from 'react-icons/fa'
+import Image from 'next/image'
+import { FaEdit, FaCog, FaMapMarkerAlt, FaCalendarAlt, FaLink, FaHeart, FaComment, FaShare, FaBookmark, FaTh, FaList, FaTag } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import PostCard from './PostCard'
 
@@ -131,10 +132,11 @@ export default function ProfilePage() {
       {/* Cover Image */}
       <div className="relative h-48 md:h-64 bg-gradient-to-r from-blue-500 to-purple-600">
         {user.coverImage && (
-          <img
+          <Image
             src={user.coverImage}
             alt="Cover"
-            className="w-full h-full object-cover"
+            layout="fill"
+            objectFit="cover"
           />
         )}
 
@@ -154,10 +156,12 @@ export default function ProfilePage() {
         {/* Avatar */}
         <div className="relative -mt-16 mb-4">
           <div className="relative inline-block">
-            <img
+            <Image
               src={user.avatar}
               alt={user.name}
-              className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 cursor-pointer"
+              width={128}
+              height={128}
+              className="rounded-full border-4 border-white dark:border-gray-800 cursor-pointer"
               onClick={() => user.livePhoto && setShowLivePhoto(true)}
             />
             {user.livePhoto && (
@@ -259,7 +263,7 @@ export default function ProfilePage() {
         {/* Tabs */}
         <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
           {[
-            { id: 'posts', label: 'Posts', icon: FaGrid },
+            { id: 'posts', label: 'Posts', icon: FaTh },
             { id: 'tagged', label: 'Tagged', icon: FaTag },
             { id: 'saved', label: 'Saved', icon: FaBookmark }
           ].map(({ id, label, icon: Icon }) => (
@@ -325,10 +329,12 @@ export default function ProfilePage() {
               className="relative max-w-md w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              <img
+              <Image
                 src={user.livePhoto}
                 alt="Live Photo"
-                className="w-full rounded-lg"
+                width={400}
+                height={600}
+                className="rounded-lg"
               />
               <button
                 onClick={() => setShowLivePhoto(false)}

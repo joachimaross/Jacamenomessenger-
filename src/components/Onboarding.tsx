@@ -25,6 +25,98 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' }
+      })
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        streamRef.current = stream
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error)
+    }
+  }
+
+  const takePhoto = async () => {
+    await startCamera()
+
+    setTimeout(() => {
+      if (videoRef.current && canvasRef.current) {
+        const canvas = canvasRef.current
+        const video = videoRef.current
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+          ctx.drawImage(video, 0, 0)
+          const photoUrl = canvas.toDataURL('image/jpeg', 0.8)
+          setProfile(prev => ({ ...prev, avatar: photoUrl }))
+        }
+      }
+    }, 1000)
+  }
+
+  const startRecording = () => {
+    if (streamRef.current) {
+      const mediaRecorder = new MediaRecorder(streamRef.current, {
+        mimeType: 'video/webm;codecs=vp9'
+      })
+
+      chunksRef.current = []
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data)
+        }
+      }
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: 'video/webm' })
+        const videoUrl = URL.createObjectURL(blob)
+        setRecordedVideo(videoUrl)
+        setIsRecording(false)
+      }
+
+      mediaRecorder.start()
+      mediaRecorderRef.current = mediaRecorder
+      setIsRecording(true)
+    }
+  }
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop()
+    }
+  }
+
+  const resetRecording = () => {
+    setRecordedVideo(null)
+    setIsRecording(false)
+  }
+
+  const nextStep = () => {
+    if (step === steps.length - 1) {
+      onComplete(profile)
+    } else {
+      setStep(step + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (step > 0) {
+      setStep(step - 1)
+    }
+  }
+
+  const canProceed = () => {
+    if (step === 3) return profile.name.trim() && profile.avatar
+    if (step === 4) return profile.livePhoto
+    return true
+  }
+
   const steps = [
     {
       title: 'Welcome to Jacameno Messenger',
@@ -180,98 +272,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       )
     }
   ]
-
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' }
-      })
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        streamRef.current = stream
-      }
-    } catch (error) {
-      console.error('Error accessing camera:', error)
-    }
-  }
-
-  const takePhoto = async () => {
-    await startCamera()
-
-    setTimeout(() => {
-      if (videoRef.current && canvasRef.current) {
-        const canvas = canvasRef.current
-        const video = videoRef.current
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
-
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.drawImage(video, 0, 0)
-          const photoUrl = canvas.toDataURL('image/jpeg', 0.8)
-          setProfile(prev => ({ ...prev, avatar: photoUrl }))
-        }
-      }
-    }, 1000)
-  }
-
-  const startRecording = () => {
-    if (streamRef.current) {
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9'
-      })
-
-      chunksRef.current = []
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data)
-        }
-      }
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'video/webm' })
-        const videoUrl = URL.createObjectURL(blob)
-        setRecordedVideo(videoUrl)
-        setIsRecording(false)
-      }
-
-      mediaRecorder.start()
-      mediaRecorderRef.current = mediaRecorder
-      setIsRecording(true)
-    }
-  }
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop()
-    }
-  }
-
-  const resetRecording = () => {
-    setRecordedVideo(null)
-    setIsRecording(false)
-  }
-
-  const nextStep = () => {
-    if (step === steps.length - 1) {
-      onComplete(profile)
-    } else {
-      setStep(step + 1)
-    }
-  }
-
-  const prevStep = () => {
-    if (step > 0) {
-      setStep(step - 1)
-    }
-  }
-
-  const canProceed = () => {
-    if (step === 3) return profile.name.trim() && profile.avatar
-    if (step === 4) return profile.livePhoto
-    return true
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">

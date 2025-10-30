@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { FaCamera, FaVideo, FaMagic, FaRedo, FaCheck, FaTimes, FaBolt, FaPalette, FaMusic } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -25,17 +25,7 @@ export default function Camera({ isOpen, onClose, onCapture }: CameraProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
 
-  useEffect(() => {
-    if (isOpen) {
-      startCamera()
-    } else {
-      stopCamera()
-    }
-
-    return () => stopCamera()
-  }, [isOpen])
-
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user' },
@@ -50,7 +40,17 @@ export default function Camera({ isOpen, onClose, onCapture }: CameraProps) {
       console.error('Error accessing camera:', error)
       alert('Unable to access camera. Please check permissions.')
     }
-  }
+  }, [mode])
+
+  useEffect(() => {
+    if (isOpen) {
+      startCamera()
+    } else {
+      stopCamera()
+    }
+
+    return () => stopCamera()
+  }, [isOpen, startCamera])
 
   const stopCamera = () => {
     if (streamRef.current) {

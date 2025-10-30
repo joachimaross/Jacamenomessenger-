@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+// @ts-ignore
 import * as FB from 'fb'
 
 FB.options({

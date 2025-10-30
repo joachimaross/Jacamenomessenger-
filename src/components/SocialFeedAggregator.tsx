@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { FaTwitter, FaFacebook, FaInstagram, FaDiscord, FaTelegram, FaGlobe } from 'react-icons/fa'
 import { motion } from 'framer-motion'
 
@@ -229,9 +230,11 @@ export default function SocialFeedAggregator() {
               {item.media && (
                 <div className="mb-4">
                   {item.media.type === 'image' && (
-                    <img
+                    <Image
                       src={item.media.url}
                       alt="Post media"
+                      width={400}
+                      height={400}
                       className="w-full max-h-96 object-cover rounded-lg"
                     />
                   )}

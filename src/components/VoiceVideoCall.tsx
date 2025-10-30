@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaPhone, FaPhoneSlash, FaExpand, FaCompress } from 'react-icons/fa'
+import Webcam from 'react-webcam'
+import io, { Socket } from 'socket.io-client'
 
 interface VoiceVideoCallProps {
   contact: {
@@ -22,12 +25,87 @@ export default function VoiceVideoCall({ contact, callType, onEndCall, isIncomin
   const [callDuration, setCallDuration] = useState(0)
   const [callStatus, setCallStatus] = useState<'connecting' | 'connected' | 'ended'>('connecting')
 
-  const localVideoRef = useRef<HTMLVideoElement>(null)
+  const localVideoRef = useRef<Webcam>(null)
   const remoteVideoRef = useRef<HTMLVideoElement>(null)
   const callStartTime = useRef<Date | null>(null)
+  const socket = useRef<Socket | null>(null)
+  const peerConnection = useRef<RTCPeerConnection | null>(null)
 
   useEffect(() => {
-    // Simulate call connection
+    socket.current = io("http://localhost:3001") // Replace with your signaling server URL
+
+    socket.current.on('connect', () => {
+      console.log('Connected to signaling server')
+      socket.current?.emit('join-room', 'some-room-id') // Replace with a dynamic room ID
+    })
+
+    socket.current.on('other-user', (userId) => {
+      if (peerConnection.current) {
+        peerConnection.current.createOffer()
+          .then(offer => {
+            peerConnection.current?.setLocalDescription(offer)
+            socket.current?.emit('offer', offer, userId)
+          })
+      }
+    })
+
+    socket.current.on('offer', (offer, userId) => {
+      if (peerConnection.current) {
+        peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer))
+          .then(() => peerConnection.current?.createAnswer())
+          .then(answer => {
+            peerConnection.current?.setLocalDescription(answer)
+            socket.current?.emit('answer', answer, userId)
+          })
+      }
+    })
+
+    socket.current.on('answer', (answer) => {
+      peerConnection.current?.setRemoteDescription(new RTCSessionDescription(answer))
+    })
+
+    socket.current.on('ice-candidate', (candidate) => {
+      peerConnection.current?.addIceCandidate(new RTCIceCandidate(candidate))
+    })
+
+    // Set up the RTCPeerConnection
+    const servers = {
+      iceServers: [
+        {
+          urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+        },
+      ],
+    }
+    peerConnection.current = new RTCPeerConnection(servers)
+
+    peerConnection.current.onicecandidate = event => {
+      if (event.candidate) {
+        socket.current?.emit('ice-candidate', event.candidate, 'some-room-id')
+      }
+    }
+
+    peerConnection.current.ontrack = event => {
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = event.streams[0]
+      }
+    }
+
+    return () => {
+      socket.current?.disconnect()
+      peerConnection.current?.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (localVideoRef.current && localVideoRef.current.stream && peerConnection.current) {
+      const stream = localVideoRef.current.stream;
+      stream.getTracks().forEach(track => {
+        peerConnection.current?.addTrack(track, stream)
+      })
+    }
+  }, [localVideoRef.current?.stream])
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setCallStatus('connected')
       callStartTime.current = new Date()
@@ -56,12 +134,16 @@ export default function VoiceVideoCall({ contact, callType, onEndCall, isIncomin
 
   const toggleMute = () => {
     setIsMuted(!isMuted)
-    // In real implementation, this would control actual microphone
+    if (localVideoRef.current?.stream) {
+      localVideoRef.current.stream.getAudioTracks()[0].enabled = isMuted
+    }
   }
 
   const toggleVideo = () => {
     setIsVideoOff(!isVideoOff)
-    // In real implementation, this would control actual camera
+    if (localVideoRef.current?.stream) {
+      localVideoRef.current.stream.getVideoTracks()[0].enabled = isVideoOff
+    }
   }
 
   const toggleFullscreen = () => {
@@ -86,10 +168,12 @@ export default function VoiceVideoCall({ contact, callType, onEndCall, isIncomin
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {contact.avatar ? (
-              <img
+              <Image
                 src={contact.avatar}
                 alt={contact.name}
-                className="w-10 h-10 rounded-full"
+                width={40}
+                height={40}
+                className="rounded-full"
               />
             ) : (
               <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
@@ -131,11 +215,10 @@ export default function VoiceVideoCall({ contact, callType, onEndCall, isIncomin
 
             {/* Local Video (Picture-in-Picture) */}
             <div className="absolute bottom-24 right-4 w-32 h-24 bg-gray-800 rounded-lg overflow-hidden">
-              <video
+              <Webcam
                 ref={localVideoRef}
                 className="w-full h-full object-cover"
-                autoPlay
-                playsInline
+                audio={!isMuted}
                 muted
               />
             </div>
@@ -145,10 +228,12 @@ export default function VoiceVideoCall({ contact, callType, onEndCall, isIncomin
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
             <div className="text-center text-white">
               {contact.avatar ? (
-                <img
+                <Image
                   src={contact.avatar}
                   alt={contact.name}
-                  className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-white"
+                  width={128}
+                  height={128}
+                  className="rounded-full mx-auto mb-6 border-4 border-white"
                 />
               ) : (
                 <div className="w-32 h-32 bg-gray-600 rounded-full mx-auto mb-6 border-4 border-white flex items-center justify-center">
