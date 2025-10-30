@@ -1,0 +1,42 @@
+{
+  "name": "Jacameno Messaging",
+  "short_name": "Jacameno",
+  "description": "Unified messaging platform for all your social media and communication needs",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["social", "communication", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Compose Message",
+      "short_name": "Compose",
+      "description": "Send a new message",
+      "url": "/compose",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Notifications",
+      "short_name": "Alerts",
+      "description": "View all notifications",
+      "url": "/notifications",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

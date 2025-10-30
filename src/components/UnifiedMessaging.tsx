@@ -7,6 +7,8 @@ import {
   FaTelegram, FaWhatsapp, FaSms, FaEnvelope,
   FaSearch, FaFilter, FaCog, FaPlus
 } from 'react-icons/fa'
+import MessageComposer from './MessageComposer'
+import NotificationManager from './NotificationManager'
 
 interface Message {
   id: string
@@ -35,6 +37,7 @@ export default function UnifiedMessaging() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showSettings, setShowSettings] = useState(false)
   const [selectedMessages, setSelectedMessages] = useState<string[]>([])
+  const [showComposer, setShowComposer] = useState(false)
 
   useEffect(() => {
     // Mock data - in real app, fetch from APIs
@@ -107,6 +110,7 @@ export default function UnifiedMessaging() {
                 className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            <NotificationManager />
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -204,10 +208,27 @@ export default function UnifiedMessaging() {
 
       {/* Compose Button */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+        <button
+          onClick={() => setShowComposer(true)}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors"
+        >
           <FaPlus className="h-5 w-5" />
           <span>Compose New Message</span>
         </button>
+
+        {/* Message Composer Modal */}
+        <AnimatePresence>
+          {showComposer && (
+            <MessageComposer
+              onSendMessage={(message) => {
+                console.log('Sending message:', message)
+                // TODO: Implement actual message sending
+              }}
+              selectedPlatform={activePlatform === 'all' ? 'sms' : activePlatform}
+              onClose={() => setShowComposer(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )

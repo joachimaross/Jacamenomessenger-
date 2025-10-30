@@ -5,8 +5,20 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Jacameno Messaging App',
-  description: 'A modern, real-time messaging application',
+  title: 'Jacameno Messaging',
+  description: 'Unified messaging platform for all your social media and communication needs',
+  manifest: '/manifest.json',
+  themeColor: '#3b82f6',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Jacameno Messaging',
+  },
+  icons: {
+    icon: '/icon-192x192.png',
+    apple: '/icon-192x192.png',
+  },
 }
 
 export default function RootLayout({
