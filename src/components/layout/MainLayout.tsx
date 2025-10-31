@@ -18,16 +18,33 @@ interface MainLayoutProps {
   children?: React.ReactNode;
 }
 
+interface StoryMedia {
+  type: 'image' | 'video';
+  url: string;
+}
+
+interface StoryItem {
+  id: string;
+  userId: string;
+  username: string;
+  avatar: string;
+  media: StoryMedia;
+  timestamp: Date;
+  expiresAt: Date;
+  likes: number;
+  comments: number;
+}
+
 export default function MainLayout({ children }: MainLayoutProps = {}) {
   const [activeTab, setActiveTab] = useState('Chats');
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [stories, setStories] = useState([]);
+  const [stories, setStories] = useState<StoryItem[]>([]);
   const [showStoryViewer, setShowStoryViewer] = useState(false);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
 
-  const handleCapture = (media: any) => {
+  const handleCapture = (media: { type: 'photo' | 'video'; url: string }) => {
     // Add captured media to stories
-    const newStory = {
+    const newStory: StoryItem = {
       id: Date.now().toString(),
       userId: 'current-user',
       username: 'You',

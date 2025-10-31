@@ -32,7 +32,7 @@ export default function ZeekyAI({ isOpen, onClose, context }: ZeekyAIProps) {
   const [isListening, setIsListening] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<any>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -62,8 +62,8 @@ export default function ZeekyAI({ isOpen, onClose, context }: ZeekyAIProps) {
       return
     }
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    recognitionRef.current = new SpeechRecognition()
+    const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    recognitionRef.current = new SpeechRecognitionCtor()
     recognitionRef.current.continuous = false
     recognitionRef.current.interimResults = false
     recognitionRef.current.lang = 'en-US'
@@ -72,13 +72,13 @@ export default function ZeekyAI({ isOpen, onClose, context }: ZeekyAIProps) {
       setIsListening(true)
     }
 
-    recognitionRef.current.onresult = (event) => {
+    recognitionRef.current.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript
       setInput(transcript)
       setIsListening(false)
     }
 
-    recognitionRef.current.onerror = (event) => {
+    recognitionRef.current.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error)
       setIsListening(false)
     }

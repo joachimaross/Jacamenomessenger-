@@ -6,7 +6,7 @@ describe('Home', () => {
   it('renders the Jacameno Messaging component', () => {
     render(<Home />)
 
-    const jacamenoMessagingComponent = screen.getByRole('heading', { name: /Jacameno Messaging/i })
+    const jacamenoMessagingComponent = screen.getByRole('heading', { name: /Welcome to Jacameno Messenger/i })
 
     expect(jacamenoMessagingComponent).toBeInTheDocument()
   })

@@ -10,6 +10,9 @@ FB.options({
 
 export async function GET(request: NextRequest) {
   try {
+    if (process.env.ENABLE_FACEBOOK_API !== 'true') {
+      return NextResponse.json({ error: 'Facebook API disabled' }, { status: 503 })
+    }
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action')
 
@@ -52,6 +55,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (process.env.ENABLE_FACEBOOK_API !== 'true') {
+      return NextResponse.json({ error: 'Facebook API disabled' }, { status: 503 })
+    }
     const { message, link } = await request.json()
 
     if (!message) {

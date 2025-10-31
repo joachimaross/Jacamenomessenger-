@@ -228,7 +228,7 @@ export default function NotificationsPanel() {
               No notifications yet
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-center">
-              When someone interacts with your content, you'll see it here.
+              When someone interacts with your content, you&apos;ll see it here.
             </p>
           </div>
         ) : (

@@ -89,3 +89,15 @@ interface Window {
   SpeechRecognition: typeof SpeechRecognition;
   webkitSpeechRecognition: typeof SpeechRecognition;
 }
+
+export interface Message {
+  id: string;
+  platform: string;
+  from: string;
+  content: string;
+  timestamp: Date;
+  read: boolean;
+  type: 'text' | 'image' | 'video' | 'link';
+}
+
+export {}

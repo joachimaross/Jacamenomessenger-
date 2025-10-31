@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import { FaArrowLeft, FaPhone, FaVideo, FaPaperclip, FaSmile, FaMicrophone, FaSend, FaLock } from 'react-icons/fa'
+import { FaArrowLeft, FaPhone, FaVideo, FaPaperclip, FaSmile, FaMicrophone, FaPaperPlane, FaLock } from 'react-icons/fa'
 import MessageThread from './MessageThread'
 import VoiceVideoCall from './VoiceVideoCall'
 import FileUploader from './FileUploader'
@@ -267,7 +267,7 @@ export default function ChatScreen({ contact, onBack, isGroup = false, participa
               onClick={handleSendMessage}
               className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full"
             >
-              <FaSend className="h-5 w-5" />
+              <FaPaperPlane className="h-5 w-5" />
             </button>
           ) : (
             <button className="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">

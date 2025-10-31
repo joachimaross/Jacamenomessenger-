@@ -1,7 +1,7 @@
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import { v2 as cloudinary } from 'cloudinary';
-import formidable from 'formidable';
+import formidable, { type Fields, type Files } from 'formidable';
 import fs from 'fs';
 
 cloudinary.config({
@@ -23,13 +23,13 @@ export default async function handler(
   if (req.method === 'POST') {
     const form = formidable({});
 
-    form.parse(req, async (err, fields, files) => {
+    form.parse(req, async (err: any, fields: Fields, files: Files) => {
       if (err) {
         res.status(500).json({ error: 'Error parsing the form data' });
         return;
       }
 
-      const file = files.file;
+      const file = (files as any).file;
 
       if (!file) {
         res.status(400).json({ error: 'No file found in the request' });
