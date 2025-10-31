@@ -1,203 +1,108 @@
-'use client'
 
-import { useState, useRef } from 'react'
-import Image from 'next/image'
-import {
-  FaPaperclip, FaImage, FaVideo, FaMicrophone,
-  FaSmile, FaPaperPlane, FaTimes, FaMapMarkerAlt
-} from 'react-icons/fa'
+import { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { FaTimes, FaPaperPlane } from 'react-icons/fa';
+import { platforms } from '@/lib/platforms';
 
 interface MessageComposerProps {
-  onSendMessage: (message: {
-    content: string
-    type: 'text' | 'image' | 'video' | 'audio' | 'location'
-    platform: string
-    attachments?: File[]
-  }) => void
-  selectedPlatform: string
-  onClose: () => void
+  onSendMessage: (message: { platform: string; to: string; content: string }) => void;
+  selectedPlatform: string;
+  onClose: () => void;
 }
 
 export default function MessageComposer({ onSendMessage, selectedPlatform, onClose }: MessageComposerProps) {
-  const [message, setMessage] = useState('')
-  const [attachments, setAttachments] = useState<File[]>([])
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [isRecording, setIsRecording] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [platform, setPlatform] = useState(selectedPlatform);
+  const [to, setTo] = useState('');
+  const [content, setContent] = useState('');
+  const composerRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = () => {
-    if (message.trim() || attachments.length > 0) {
-      onSendMessage({
-        content: message,
-        type: attachments.length > 0 ? 'image' : 'text',
-        platform: selectedPlatform,
-        attachments
-      })
-      setMessage('')
-      setAttachments([])
-      onClose()
+  const handleSubmit = () => {
+    if (to && content) {
+      onSendMessage({ platform, to, content });
+      onClose();
     }
-  }
+  };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || [])
-    setAttachments(prev => [...prev, ...files])
-  }
-
-  const removeAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index))
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (composerRef.current && !composerRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-t-3xl w-full max-w-md max-h-[80vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            New Message
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div ref={composerRef} className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg mx-4">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h2 className="text-lg font-bold">New Message</h2>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
             <FaTimes className="h-5 w-5" />
           </button>
         </div>
-
-        {/* Platform Selector */}
-        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">To:</span>
-            <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
-              {selectedPlatform}
-            </span>
-          </div>
-        </div>
-
-        {/* Attachments Preview */}
-        {attachments.length > 0 && (
-          <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap gap-2">
-              {attachments.map((file, index) => (
-                <div key={index} className="relative">
-                  {file.type.startsWith('image/') ? (
-                    <Image
-                      src={URL.createObjectURL(file)}
-                      alt={file.name}
-                      width={64}
-                      height={64}
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                      <FaPaperclip className="h-6 w-6 text-gray-600 dark:text-gray-400" />
-                    </div>
-                  )}
-                  <button
-                    onClick={() => removeAttachment(index)}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Message Input */}
-        <div className="flex-1 p-4">
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            className="w-full h-full resize-none border-0 focus:ring-0 focus:outline-none text-gray-900 dark:text-white bg-transparent placeholder-gray-500 dark:placeholder-gray-400"
-            rows={4}
-          />
-        </div>
-
-        {/* Toolbar */}
-        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              {/* File Attachment */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <FaPaperclip className="h-5 w-5" />
-              </button>
-
-              {/* Image */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <FaImage className="h-5 w-5" />
-              </button>
-
-              {/* Video */}
-              <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                <FaVideo className="h-5 w-5" />
-              </button>
-
-              {/* Voice Recording */}
-              <button
-                onClick={() => setIsRecording(!isRecording)}
-                className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                  isRecording ? 'text-red-500' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-                }`}
-              >
-                <FaMicrophone className="h-5 w-5" />
-              </button>
-
-              {/* Location */}
-              <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                <FaMapMarkerAlt className="h-5 w-5" />
-              </button>
-
-              {/* Emoji */}
-              <button
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <FaSmile className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Send Button */}
-            <button
-              onClick={handleSend}
-              disabled={!message.trim() && attachments.length === 0}
-              className={`p-3 rounded-full ${
-                message.trim() || attachments.length > 0
-                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
-              } transition-colors`}
+        <div className="p-6 space-y-4">
+          <div>
+            <label htmlFor="platform" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Platform
+            </label>
+            <select
+              id="platform"
+              value={platform}
+              onChange={(e) => setPlatform(e.target.value)}
+              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
             >
-              <FaPaperPlane className="h-5 w-5" />
-            </button>
+              {platforms.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="to" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              To
+            </label>
+            <input
+              type="text"
+              id="to"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              placeholder={platform === 'email' ? 'recipient@example.com' : (platform === 'sms' ? '+1234567890' : '@username')}
+            />
+          </div>
+          <div>
+            <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Message
+            </label>
+            <textarea
+              id="content"
+              rows={5}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              placeholder="Write your message..."
+            />
           </div>
         </div>
-
-        {/* Hidden File Input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
+        <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+          <button
+            onClick={handleSubmit}
+            disabled={!to || !content}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg flex items-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            <FaPaperPlane />
+            <span>Send</span>
+          </button>
+        </div>
       </div>
-    </div>
-  )
+    </motion.div>
+  );
 }
