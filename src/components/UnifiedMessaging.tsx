@@ -9,6 +9,7 @@ import PlatformTabs from './PlatformTabs';
 import MessageList from './MessageList';
 import ComposerButton from './ComposerButton';
 import MessageComposer from './MessageComposer';
+import ChatScreen from './ChatScreen';
 
 export default function UnifiedMessaging() {
   const [activePlatform, setActivePlatform] = useState('all')
@@ -16,6 +17,7 @@ export default function UnifiedMessaging() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showSettings, setShowSettings] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
+  const [selectedChat, setSelectedChat] = useState<any>(null)
 
   useEffect(() => {
     setMessages(mockMessages)
@@ -28,20 +30,29 @@ export default function UnifiedMessaging() {
     return matchesPlatform && matchesSearch
   })
 
+  if (selectedChat) {
+    return (
+      <ChatScreen
+        contact={selectedChat}
+        onBack={() => setSelectedChat(null)}
+      />
+    )
+  }
+
   return (
     <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
-      <MessagesHeader 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
-        showSettings={showSettings} 
-        setShowSettings={setShowSettings} 
+      <MessagesHeader
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        showSettings={showSettings}
+        setShowSettings={setShowSettings}
       />
-      <PlatformTabs 
-        activePlatform={activePlatform} 
-        setActivePlatform={setActivePlatform} 
-        messages={messages} 
+      <PlatformTabs
+        activePlatform={activePlatform}
+        setActivePlatform={setActivePlatform}
+        messages={messages}
       />
-      <MessageList messages={filteredMessages} />
+      <MessageList messages={filteredMessages} onSelectChat={setSelectedChat} />
       <ComposerButton setShowComposer={setShowComposer} />
       <AnimatePresence>
         {showComposer && (

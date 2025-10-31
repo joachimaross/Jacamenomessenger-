@@ -1,8 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
-import { FaComment, FaBolt, FaRetweet, FaCompass, FaUser, FaPlus } from 'react-icons/fa';
+import { FaComment, FaBolt, FaRetweet, FaCompass, FaBell } from 'react-icons/fa';
 
 const navItems = [
   { name: 'Chats', icon: FaComment },
@@ -10,11 +9,10 @@ const navItems = [
   { name: 'Feed', icon: FaRetweet },
   { name: 'Threads', icon: FaRetweet },
   { name: 'Explore', icon: FaCompass },
-  { name: 'Profile', icon: FaUser },
+  { name: 'Notifications', icon: FaBell },
 ];
 
-export default function BottomNavbar() {
-  const [activeTab, setActiveTab] = useState('Chats');
+export default function BottomNavbar({ activeTab, setActiveTab }: { activeTab: string; setActiveTab: (tab: string) => void }) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg">

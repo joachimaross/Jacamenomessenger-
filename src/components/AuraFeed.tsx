@@ -32,6 +32,7 @@ export default function AuraFeed() {
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(false)
   const [showComments, setShowComments] = useState(false)
+  const [feedMode, setFeedMode] = useState<'forYou' | 'friends'>('forYou')
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -141,6 +142,32 @@ export default function AuraFeed() {
 
   return (
     <div className="h-screen w-full bg-black relative overflow-hidden">
+      {/* Feed Mode Toggle */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="bg-black bg-opacity-50 rounded-full p-1 flex">
+          <button
+            onClick={() => setFeedMode('forYou')}
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
+              feedMode === 'forYou'
+                ? 'bg-white text-black'
+                : 'text-white hover:bg-white hover:bg-opacity-20'
+            }`}
+          >
+            For You
+          </button>
+          <button
+            onClick={() => setFeedMode('friends')}
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
+              feedMode === 'friends'
+                ? 'bg-white text-black'
+                : 'text-white hover:bg-white hover:bg-opacity-20'
+            }`}
+          >
+            Friends
+          </button>
+        </div>
+      </div>
+
       {/* Main Content */}
       <AnimatePresence mode="wait">
         <motion.div

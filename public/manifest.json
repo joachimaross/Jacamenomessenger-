@@ -1,13 +1,15 @@
 {
-  "name": "Jacameno Messaging",
+  "name": "Jacameno Messenger - Powered by Zeeky AI",
   "short_name": "Jacameno",
-  "description": "Unified messaging platform for all your social media and communication needs",
+  "description": "Unified messaging platform with Zeeky AI - a hyper-personalized social concierge blending iMessage, TikTok, and Instagram experiences",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#3b82f6",
+  "theme_color": "#6366f1",
   "orientation": "portrait-primary",
   "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -20,12 +22,46 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
     }
   ],
-  "categories": ["social", "communication", "productivity"],
+  "categories": ["social", "communication", "productivity", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
   "shortcuts": [
     {
-      "name": "Compose Message",
+      "name": "New Message",
       "short_name": "Compose",
       "description": "Send a new message",
       "url": "/compose",
@@ -37,6 +73,25 @@
       "description": "View all notifications",
       "url": "/notifications",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Stories",
+      "short_name": "Camera",
+      "description": "Create and view stories",
+      "url": "/stories",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Feed",
+      "short_name": "Discover",
+      "description": "Browse the feed",
+      "url": "/feed",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
